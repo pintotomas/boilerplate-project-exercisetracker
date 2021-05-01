@@ -24,6 +24,8 @@ const handleCreateUser = require("./myApp.js").handleCreateUser;
 const findAllUsers = require("./myApp.js").findAllUsers;
 const handleFindAllUsers = require("./myApp.js").handleFindAllUsers;
 
+
+
 app.route("/api/users")
     .get(function(req, res) {
       findAllUsers(handleFindAllUsers, res);
@@ -41,4 +43,24 @@ app.route("/api/users")
         createAndSaveUser(handleCreateUser , req.body.username, res);
     })
 
+
+const handleCreateExcercise = require("./myApp.js").handleCreateExcercise;
+const createAndSaveExcercise = require("./myApp.js").createAndSaveExcercise;
+
+app.route("/api/users/:_id/exercises")
+    .get(function(req, res) {
+      
+})
+    .post(function(req, res) {
+        console.log(req.body);
+        if (req.body.duration == undefined || req.body.description == undefined || req.params._id == undefined) {
+          res.json({"error": "duration or description or _id field not found in request body/params"});
+          return;
+        }
+        if (req.body.username == "" || req.body.description == "" || req.params._id == "") {
+          res.json({"error": "The only empty field can be date"});
+          return;
+        }
+        createAndSaveExcercise(handleCreateExcercise, req.params._id, req.body.description, req.body.duration, req.body.date, res);
+    })
 
