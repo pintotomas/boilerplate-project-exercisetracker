@@ -21,10 +21,12 @@ const listener = app.listen(process.env.PORT || 3000, () => {
 
 const createAndSaveUser = require("./myApp.js").createAndSaveUser;
 const handleCreateUser = require("./myApp.js").handleCreateUser;
+const findAllUsers = require("./myApp.js").findAllUsers;
+const handleFindAllUsers = require("./myApp.js").handleFindAllUsers;
 
 app.route("/api/users")
     .get(function(req, res) {
-              
+      findAllUsers(handleFindAllUsers, res);
 })
     .post(function(req, res) {
         console.log(req.body.username);
@@ -38,4 +40,5 @@ app.route("/api/users")
         }
         createAndSaveUser(handleCreateUser , req.body.username, res);
     })
+
 

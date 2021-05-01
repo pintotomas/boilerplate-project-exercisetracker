@@ -14,7 +14,11 @@ let userSchema = new Schema({
   });
   
 let User = mongoose.model('User', userSchema);
-
+//Reset urls 
+User.deleteMany({}, function(err, result){
+    if(err) return console.log(util.inspect(err));
+    console.log("cleaned up ", result.deletedCount, " records");
+  }); 
 
 var createAndSaveUser = function(done, name, res) {
 
@@ -35,6 +39,22 @@ var createAndSaveUser = function(done, name, res) {
     })
 }
 
+const findAllUsers = (done, res) => {
+    User.find({}, (err, data) => {
+      if (err) return done(err, data, res);
+      return done(null, data, res);
+    });
+};
+
+var handleFindAllUsers = (err, data, res) => {
+    if (err) {
+        res.json({"error": "Failed to find all users " + err });
+        return;
+    }
+    res.json(data);
+    return;
+}
+
 var handleCreateUser = function(error, data, res) {
     console.log("Error: " + error );
     if (error) {
@@ -47,3 +67,6 @@ var handleCreateUser = function(error, data, res) {
 
 exports.createAndSaveUser = createAndSaveUser;
 exports.handleCreateUser = handleCreateUser;
+exports.findAllUsers = findAllUsers;
+exports.handleFindAllUsers = handleFindAllUsers;
+
