@@ -1,18 +1,41 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const bodyParser = require("body-parser");
+
 require('dotenv').config()
 
 app.use(cors())
 app.use(express.static('public'))
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: "false" }));
+app.use(bodyParser.json());
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-
-
-
-
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
+
+const createAndSaveUser = require("./myApp.js").createAndSaveUser;
+const handleCreateUser = require("./myApp.js").handleCreateUser;
+
+app.route("/api/users")
+    .get(function(req, res) {
+              
+})
+    .post(function(req, res) {
+        console.log(req.body.username);
+        if (req.body.username == undefined) {
+          res.json({"error": "Username field not found in request body"});
+          return;
+        }
+        if (req.body.username == "") {
+          res.json({"error": "Username cannot be empty"});
+          return;
+        }
+        createAndSaveUser(handleCreateUser , req.body.username, res);
+    })
+
