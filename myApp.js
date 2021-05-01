@@ -41,7 +41,8 @@ var handleCreateUser = function(error, data, res) {
         res.json({"error": "Failed to save User with that username"})
         return;
     }
-    res.json({username: data.username, _id: data.userid});
+    console.group("Data is: " + data);
+    res.json({username: data.username, _id: data.userId});
 }
 
 exports.createAndSaveUser = createAndSaveUser;
