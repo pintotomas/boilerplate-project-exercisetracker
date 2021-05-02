@@ -83,6 +83,7 @@ const handleFindLogsForUser = (err, res, userDoc, excerciseDoc) => {
     }
     result = {username: userDoc.username,
               _id: userDoc.userId, 
+              count: excerciseDoc.length,
               log: [excerciseDoc]};
     console.log("handleFindLogsForUser - return json is " + util.inspect(result));
     res.json(result);
@@ -129,7 +130,8 @@ var handleCreateUser = function(error, data, res) {
         return;
     }
     //console.group("Data is: " + data);
-    res.json({username: data.username, _id: data.userId});
+    res.json({username: data.username,
+             _id: data.userId});
 }
 
 exports.findLogsForUser = findLogsForUser;
