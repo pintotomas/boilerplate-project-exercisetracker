@@ -62,7 +62,7 @@ app.route("/api/users/:_id/exercises")
           res.json({"error": "The only empty field can be date"});
           return;
         }
-        console.log("Creating excercise - req.body is: " + util.inspect(req.body));
+        //console.log("Creating excercise - req.body is: " + util.inspect(req.body));
         createAndSaveExcercise(handleCreateExcercise, req.params._id, req.body.description, req.body.duration, req.body.date, res);
     })
 
@@ -71,5 +71,8 @@ const handleFindLogsForUser = require("./myApp.js").handleFindLogsForUser;
 
 app.route("/api/users/:_id/logs")
     .get(function(req, res) {
-    findLogsForUser(handleFindLogsForUser, req.params._id, res);    
+    console.log("req.params is " + util.inspect(req.params));
+    findLogsForUser(handleFindLogsForUser, req.params._id, req.query.from,
+                     req.query.to, req.query.limit, res);    
+    
 })

@@ -36,7 +36,7 @@ User.deleteMany({}, function(err, result){
 const createAndSaveExcercise = (done, userId, description, duration, date, res) => {
     User.findOne({userId: userId}, (err, userData) => {
         if (err) {
-            console.log("Error createAndSaveExercise - " + err);
+            //console.log("Error createAndSaveExercise - " + err);
             return done(err, res);
         }
         var excercise = new Excercise({description: description, userId: userData.userId,
@@ -55,24 +55,48 @@ const handleCreateExcercise = (err, res, excerciseData, userData) => {
         res.json({"error": "Failed to create excercise " + err });
         return;
     }
-    console.log("Excercise created success: " + excerciseData);
+    //console.log("Excercise created success: " + excerciseData);
     result = {"_id": userData.userId, username: userData.username,
      date: excerciseData.date.toDateString(), duration: excerciseData.duration,
      description: excerciseData.description};
-    console.log("handleCreateExcercise - return json is " + util.inspect(result));
+    //console.log("handleCreateExcercise - return json is " + util.inspect(result));
     res.json(result);
 }
 
-const findLogsForUser = (done, userId, res) => {
-    User.find({userId: userId}, (err, userDoc) => {
+const findLogsForUser = (done, userId, from, to, limit, res) => {
+    console.log("Entered findLogsFoUser");
+    var from = "1000-01-01";
+    var to = "9999-01-01";
+    var limit = 10000;
+    if (from) {
+        fromFilter = from;
+    }
+    if (to) {
+        toFilter = to;
+    }
+
+    if (limit) {
+        limitFilter = limit;
+    }
+
+    var filters = {userId: userId, 
+        date: {
+            $gte: new Date(fromFilter),
+            $lt: new Date(toFilter)
+        }};
+    console.log("findLogsForUser - filter json is " + util.inspect(filters));
+
+
+
+    User.find({userId: userId}).exec((err, userDoc) => {
         if (!userDoc.length) {
             return done(true);
         } 
-        var userExcercises = Excercise.find({userId: userId}, (err, excercisesDoc) => {
+        var userExcercises = Excercise.find(filters).limit(limitFilter).exec((err, excercisesDoc) => {
             if (err) {
                 return done(err, res);
             }
-            return done(err, res, userDoc, excercisesDoc);
+            return done(err, res, userDoc[0], excercisesDoc);
     })
 });}
 
