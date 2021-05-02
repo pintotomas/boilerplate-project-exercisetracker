@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const bodyParser = require("body-parser");
+const util = require('util');
 
 require('dotenv').config()
 
@@ -31,7 +32,7 @@ app.route("/api/users")
       findAllUsers(handleFindAllUsers, res);
 })
     .post(function(req, res) {
-        console.log(req.body.username);
+        //console.log(req.body.username);
         if (req.body.username == undefined) {
           res.json({"error": "Username field not found in request body"});
           return;
@@ -52,7 +53,7 @@ app.route("/api/users/:_id/exercises")
       
 })
     .post(function(req, res) {
-        console.log(req.body);
+        //console.log(req.body);
         if (req.body.duration == undefined || req.body.description == undefined || req.params._id == undefined) {
           res.json({"error": "duration or description or _id field not found in request body/params"});
           return;
@@ -61,6 +62,7 @@ app.route("/api/users/:_id/exercises")
           res.json({"error": "The only empty field can be date"});
           return;
         }
+        console.log("Creating excercise - req.body is: " + util.inspect(req.body));
         createAndSaveExcercise(handleCreateExcercise, req.params._id, req.body.description, req.body.duration, req.body.date, res);
     })
 

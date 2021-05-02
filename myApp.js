@@ -2,7 +2,7 @@ require('dotenv').config();
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
+const util = require('util');
 const { 
     v1: uuidv1,
   } = require('uuid');
@@ -36,25 +36,31 @@ User.deleteMany({}, function(err, result){
 const createAndSaveExcercise = (done, userId, description, duration, date, res) => {
     User.findOne({userId: userId}, (err, userData) => {
         if (err) {
+            console.log("Error createAndSaveExercise - " + err);
             return done(err, res);
         }
         var excercise = new Excercise({description: description, userId: userData.userId,
                                        duration: duration, date: date});
+        
         excercise.save((err, data) => {
-            return done(err, res, data, userData.userName);
+            return done(err, res, data, userData);
         });
     });
 }
 
-const handleCreateExcercise = (err, res, excerciseData, userName) => {
+const handleCreateExcercise = (err, res, excerciseData, userData) => {
     // TO DO: hay que rearmar el json que se manda, tiene un monton de cosas que no son necesarias
     // y ya estaria andando.
     if (err) {
         res.json({"error": "Failed to create excercise " + err });
         return;
     }
-    excerciseData["username"] = userName;
-    res.json(excerciseData);
+    console.log("Excercise created success: " + excerciseData);
+    result = {"_id": userData.userId, username: userData.username,
+     date: excerciseData.date.toDateString(), duration: excerciseData.duration,
+     description: excerciseData.description};
+    console.log("handleCreateExcercise - return json is " + util.inspect(result));
+    res.json(result);
 }
 
 
@@ -64,12 +70,12 @@ var createAndSaveUser = function(done, name, res) {
     var user = new User({username: name, userId: uuidv1()});
     User.find({username: name}, (err, doc) => {
         if (doc.length) {
-            console.log("A user with that name already exists " + doc);
+            //console.log("A user with that name already exists " + doc);
             return done(true, doc[0], res);
         } else {
             user.save((err, data)=>{
              if (err) {
-                console.log("Error happened while saving: " + err);
+                //console.log("Error happened while saving: " + err);
                 return done(err, data, res)
              }
              return done(null, data, res)
@@ -100,7 +106,7 @@ var handleCreateUser = function(error, data, res) {
         res.json({"error": "Failed to save User with that username"})
         return;
     }
-    console.group("Data is: " + data);
+    //console.group("Data is: " + data);
     res.json({username: data.username, _id: data.userId});
 }
 exports.handleCreateExcercise = handleCreateExcercise;
