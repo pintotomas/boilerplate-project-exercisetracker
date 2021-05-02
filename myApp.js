@@ -63,10 +63,32 @@ const handleCreateExcercise = (err, res, excerciseData, userData) => {
     res.json(result);
 }
 
+const findLogsForUser = (done, userId, res) => {
+    User.find({userId: userId}, (err, userDoc) => {
+        if (!userDoc.length) {
+            return done(true);
+        } 
+        var userExcercises = Excercise.find({userId: userId}, (err, excercisesDoc) => {
+            if (err) {
+                return done(err, res);
+            }
+            return done(err, res, userDoc, excercisesDoc);
+    })
+});}
 
+const handleFindLogsForUser = (err, res, userDoc, excerciseDoc) => {
+    if (err) {
+        res.json({"error": "Failed to find all users " + err });
+        return;
+    }
+    result = {username: userDoc.username,
+              _id: userDoc.userId, 
+              log: [excerciseDoc]};
+    console.log("handleFindLogsForUser - return json is " + util.inspect(result));
+    res.json(result);
+}
 
 var createAndSaveUser = function(done, name, res) {
-
     var user = new User({username: name, userId: uuidv1()});
     User.find({username: name}, (err, doc) => {
         if (doc.length) {
@@ -109,6 +131,9 @@ var handleCreateUser = function(error, data, res) {
     //console.group("Data is: " + data);
     res.json({username: data.username, _id: data.userId});
 }
+
+exports.findLogsForUser = findLogsForUser;
+exports.handleFindLogsForUser = handleFindLogsForUser;
 exports.handleCreateExcercise = handleCreateExcercise;
 exports.createAndSaveExcercise = createAndSaveExcercise;
 exports.createAndSaveUser = createAndSaveUser;

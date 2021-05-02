@@ -66,3 +66,10 @@ app.route("/api/users/:_id/exercises")
         createAndSaveExcercise(handleCreateExcercise, req.params._id, req.body.description, req.body.duration, req.body.date, res);
     })
 
+const findLogsForUser = require("./myApp.js").findLogsForUser;
+const handleFindLogsForUser = require("./myApp.js").handleFindLogsForUser;
+
+app.route("/api/users/:_id/logs")
+    .get(function(req, res) {
+    findLogsForUser(handleFindLogsForUser, req.params._id, res);    
+})
