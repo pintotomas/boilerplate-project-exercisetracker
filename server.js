@@ -72,6 +72,10 @@ const handleFindLogsForUser = require("./myApp.js").handleFindLogsForUser;
 app.route("/api/users/:_id/logs")
     .get(function(req, res) {
     console.log("req.params is " + util.inspect(req.params));
+    console.log("req.query is " + util.inspect(req.query));
+    console.log("req.query.from is " + req.query.from);
+    console.log("req.query.to is " + req.query.to);
+    console.log("req.query.limit is " + req.query.limit);
     findLogsForUser(handleFindLogsForUser, req.params._id, req.query.from,
                      req.query.to, req.query.limit, res);    
     

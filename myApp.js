@@ -64,25 +64,27 @@ const handleCreateExcercise = (err, res, excerciseData, userData) => {
 }
 
 const findLogsForUser = (done, userId, from, to, limit, res) => {
+
     console.log("Entered findLogsFoUser");
-    var from = "1000-01-01";
-    var to = "9999-01-01";
-    var limit = 10000;
+    var fromFilter = new Date("1000-01-01");
+    var toFilter = new Date("9999-01-01");
+    var limitFilter = 10000;
     if (from) {
-        fromFilter = from;
+        fromFilter = new Date(from);
     }
     if (to) {
-        toFilter = to;
+        toFilter = new Date(to);
     }
 
     if (limit) {
         limitFilter = limit;
     }
+    toFilter.setDate(toFilter.getDate() + 1); // Add 1 day to include date
 
     var filters = {userId: userId, 
         date: {
-            $gte: new Date(fromFilter),
-            $lt: new Date(toFilter)
+            $gte: fromFilter,
+            $lt: toFilter
         }};
     console.log("findLogsForUser - filter json is " + util.inspect(filters));
 
@@ -105,11 +107,21 @@ const handleFindLogsForUser = (err, res, userDoc, excerciseDoc) => {
         res.json({"error": "Failed to find all users " + err });
         return;
     }
+    var logs = [];
+    excerciseDoc.forEach(excercise => 
+        {
+            log = {};
+            log.description = excercise.description;
+            log.duration = excercise.duration;
+            log.date = excercise.date.toDateString();
+            logs.push(log);
+        });
     result = {username: userDoc.username,
               _id: userDoc.userId, 
               count: excerciseDoc.length,
-              log: [excerciseDoc]};
+              log: [logs]};
     console.log("handleFindLogsForUser - return json is " + util.inspect(result));
+    console.log("handleFindLogsForUser - return json for excercise docs is " + util.inspect(logs));
     res.json(result);
 }
 
